@@ -5,7 +5,7 @@ import "./../app/app.css";
 import "@aws-amplify/ui-react/styles.css";
 import { INDIAN_STATES } from "./states";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://50.16.150.108:5000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://50.16.150.108:5000';
 
 const ENDPOINTS = {
     submit: '/api/pdi/submit',
@@ -93,6 +93,7 @@ export default function App() {
                 headers: {
                     'Accept': 'application/json',
                 },
+                mode: 'cors',
                 credentials: 'include'
             });
 

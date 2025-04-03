@@ -90,7 +90,7 @@ class _PDISubmissionFormState extends State<PDISubmissionForm> {
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('http://50.16.150.108:5000/api/pdi/submit'),
+        Uri.parse('https://50.16.150.108:5000/api/pdi/submit'),
       );
 
       // Add headers
