@@ -93,6 +93,9 @@ class _PDISubmissionFormState extends State<PDISubmissionForm> {
         Uri.parse('http://50.16.150.108:5000/api/pdi/submit'),
       );
 
+      // Add headers
+      request.headers['Accept'] = 'application/json';
+
       // Add text fields
       request.fields['customerName'] = _customerNameController.text;
       request.fields['state'] = _selectedState!;
@@ -124,11 +127,11 @@ class _PDISubmissionFormState extends State<PDISubmissionForm> {
           _resetForm();
         });
       } else {
-        throw Exception('Submission failed');
+        throw Exception(jsonResponse['message'] ?? 'Submission failed');
       }
     } catch (e) {
       setState(() {
-        _message = 'Error submitting PDI. Please try again.';
+        _message = 'Error: ${e.toString()}';
       });
       print('Error: $e');
     } finally {

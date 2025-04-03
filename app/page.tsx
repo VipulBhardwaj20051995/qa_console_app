@@ -5,7 +5,7 @@ import "./../app/app.css";
 import "@aws-amplify/ui-react/styles.css";
 import { INDIAN_STATES } from "./states";
 
-const API_BASE_URL = 'http://50.16.150.108:5000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://50.16.150.108:5000';
 
 const ENDPOINTS = {
     submit: '/api/pdi/submit',
@@ -89,11 +89,16 @@ export default function App() {
 
             const response = await fetch(`${API_BASE_URL}${ENDPOINTS.submit}`, {
                 method: 'POST',
-                body: formDataToSend
+                body: formDataToSend,
+                headers: {
+                    'Accept': 'application/json',
+                },
+                credentials: 'include'
             });
 
             if (!response.ok) {
-                throw new Error('Submission failed');
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || 'Submission failed');
             }
 
             setMessage('PDI submitted successfully!');
@@ -108,8 +113,8 @@ export default function App() {
                 video: null
             });
         } catch (error) {
-            setMessage('Error submitting PDI. Please try again.');
             console.error('Error:', error);
+            setMessage(error instanceof Error ? error.message : 'Error submitting PDI. Please try again.');
         } finally {
             setLoading(false);
         }
