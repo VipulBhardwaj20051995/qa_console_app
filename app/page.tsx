@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import "./../app/app.css";
 import "@aws-amplify/ui-react/styles.css";
+import { INDIAN_STATES } from "./states";
 
 const API_BASE_URL = 'http://50.16.150.108:5000';
 
 const ENDPOINTS = {
     submit: '/api/pdi/submit',
-    states: '/api/pdi/states',
     health: '/health'
 };
 
@@ -34,23 +34,8 @@ export default function App() {
         images: [],
         video: null
     });
-    const [states, setStates] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
-
-    useEffect(() => {
-        fetchStates();
-    }, []);
-
-    const fetchStates = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}${ENDPOINTS.states}`);
-            const data = await response.json();
-            setStates(data);
-        } catch (error) {
-            console.error('Error fetching states:', error);
-        }
-    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -156,7 +141,7 @@ export default function App() {
                         required
                     >
                         <option value="">Select State</option>
-                        {states.map((state) => (
+                        {INDIAN_STATES.map((state) => (
                             <option key={state} value={state}>
                                 {state}
                             </option>

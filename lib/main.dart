@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import 'dart:convert';
+import 'states.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,7 +41,7 @@ class _PDISubmissionFormState extends State<PDISubmissionForm> {
   final _phoneController = TextEditingController();
   
   String? _selectedState;
-  List<String> _states = [];
+  List<String> _states = States.indianStates;
   List<File> _images = [];
   File? _video;
   bool _isLoading = false;
@@ -49,20 +50,6 @@ class _PDISubmissionFormState extends State<PDISubmissionForm> {
   @override
   void initState() {
     super.initState();
-    _fetchStates();
-  }
-
-  Future<void> _fetchStates() async {
-    try {
-      final response = await http.get(Uri.parse('http://50.16.150.108:5000/api/pdi/states'));
-      if (response.statusCode == 200) {
-        setState(() {
-          _states = List<String>.from(json.decode(response.body));
-        });
-      }
-    } catch (e) {
-      print('Error fetching states: $e');
-    }
   }
 
   Future<void> _pickImages() async {
