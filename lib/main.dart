@@ -90,11 +90,15 @@ class _PDISubmissionFormState extends State<PDISubmissionForm> {
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('https://50.16.150.108:5000/api/pdi/submit'),
+        Uri.parse('http://50.16.150.108:5000/api/pdi/submit'),
       );
 
       // Add headers
       request.headers['Accept'] = 'application/json';
+      request.headers['Connection'] = 'keep-alive';
+      request.headers['Access-Control-Allow-Origin'] = '*';
+      request.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS';
+      request.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept';
 
       // Add text fields
       request.fields['customerName'] = _customerNameController.text;
@@ -117,7 +121,14 @@ class _PDISubmissionFormState extends State<PDISubmissionForm> {
         );
       }
 
-      final response = await request.send();
+      // Set timeout for the request
+      final response = await request.send().timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw TimeoutException('Request timed out. Please check your connection and try again.');
+        },
+      );
+
       final responseData = await response.stream.bytesToString();
       final jsonResponse = json.decode(responseData);
 
@@ -127,7 +138,7 @@ class _PDISubmissionFormState extends State<PDISubmissionForm> {
           _resetForm();
         });
       } else {
-        throw Exception(jsonResponse['message'] ?? 'Submission failed');
+        throw Exception(jsonResponse['message'] ?? 'Submission failed with status code: ${response.statusCode}');
       }
     } catch (e) {
       setState(() {

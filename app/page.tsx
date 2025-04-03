@@ -5,7 +5,7 @@ import "./../app/app.css";
 import "@aws-amplify/ui-react/styles.css";
 import { INDIAN_STATES } from "./states";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://50.16.150.108:5000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://50.16.150.108:5000';
 
 const ENDPOINTS = {
     submit: '/api/pdi/submit',
@@ -87,19 +87,26 @@ export default function App() {
                 }
             });
 
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
             const response = await fetch(`${API_BASE_URL}${ENDPOINTS.submit}`, {
                 method: 'POST',
                 body: formDataToSend,
                 headers: {
                     'Accept': 'application/json',
+                    'Connection': 'keep-alive'
                 },
                 mode: 'cors',
-                credentials: 'include'
+                credentials: 'include',
+                signal: controller.signal
             });
+
+            clearTimeout(timeoutId);
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => null);
-                throw new Error(errorData?.message || 'Submission failed');
+                throw new Error(errorData?.message || `Submission failed with status code: ${response.status}`);
             }
 
             setMessage('PDI submitted successfully!');
